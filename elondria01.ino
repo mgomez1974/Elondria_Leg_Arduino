@@ -1,3 +1,5 @@
+#include <Adafruit_ILI9340.h>
+
 // Test motor joint mode
 
 #include "DynamixelMotor.h"
@@ -25,6 +27,7 @@ const int analogInPin5 = A2;
 int sensorValue1 = 0;
 int sensorValue3 = 0;
 int sensorValue5 = 0;
+int counter_refresh=0;
 
 double X1_Art1=0;     double Y1_Art1=1024;
 double X2_Art1=1024;  double Y2_Art1=0;
@@ -76,6 +79,7 @@ void setup()
   tft.setTextColor(ILI9340_GREEN);
   tft.setTextSize(1);
   tft.setCursor(0, 0);  tft.print("X1,Y1  ");
+  counter_refresh=0;
 }
 
 void loop() 
@@ -86,10 +90,7 @@ void loop()
   static double Y_Art1_Old,sensorValue1_Old;
   static double Y_Art3_Old,sensorValue3_Old;
   static double Y_Art5_Old,sensorValue5_Old;
-  tft.setTextColor(ILI9340_BLACK);
-                                            tft.setCursor(50, 0); tft.print(sensorValue1_Old);                                           tft.setCursor(100, 0); tft.print(Y_Art1_Old); 
-                                            tft.setCursor(50, 15); tft.print(sensorValue3_Old);                                          tft.setCursor(100, 15); tft.print(Y_Art3_Old); 
-                                            tft.setCursor(50, 30); tft.print(sensorValue5_Old);                                          tft.setCursor(100, 30); tft.print(Y_Art5_Old); 
+
   Y_Art1=(M_Art1*sensorValue1)+B_Art1;
   Y_Art3=(M_Art3*sensorValue3)+B_Art3;
   Y_Art5=(M_Art5*sensorValue5)+B_Art5;
@@ -97,16 +98,29 @@ void loop()
   sensorValue3 = analogRead(analogInPin3);     if (sensorValue3>X1_Art3&&sensorValue3<X2_Art3)         motor3.goalPosition(Y_Art3);
   sensorValue5 = analogRead(analogInPin5);     if (sensorValue5>X1_Art5&&sensorValue5<X2_Art5)         motor5.goalPosition(Y_Art5);
   //tft.fillRect(24, 0, 40, 8, ILI9340_RED);
+
+
+  if (counter_refresh >30)
+  {
+    counter_refresh=0;
   tft.setTextSize(1);
+  tft.setTextColor(ILI9340_BLACK);
+                                            tft.setCursor(50, 0); tft.print(sensorValue1_Old);                                           tft.setCursor(100, 0); tft.print(Y_Art1_Old); 
+                                            tft.setCursor(50, 100); tft.print(sensorValue3_Old);                                          tft.setCursor(100, 100); tft.print(Y_Art3_Old); 
+                                            tft.setCursor(50, 200); tft.print(sensorValue5_Old);                                          tft.setCursor(100, 200); tft.print(Y_Art5_Old); 
+  //tft.setTextSize(1);
   tft.setTextColor(ILI9340_GREEN);
                                             tft.setCursor(50, 0);  tft.print(sensorValue1);                                              tft.setCursor(100, 0); tft.print(Y_Art1); 
-                                            tft.setCursor(50, 15); tft.print(sensorValue3);                                              tft.setCursor(100, 15); tft.print(Y_Art3); 
-                                            tft.setCursor(50, 30); tft.print(sensorValue5);                                              tft.setCursor(100, 30); tft.print(Y_Art5); 
-
+                                            tft.setCursor(50, 100); tft.print(sensorValue3);                                              tft.setCursor(100, 100); tft.print(Y_Art3); 
+                                            tft.setCursor(50, 200); tft.print(sensorValue5);                                              tft.setCursor(100, 200); tft.print(Y_Art5); 
   Y_Art1_Old=Y_Art1;
   Y_Art3_Old=Y_Art3;
   Y_Art5_Old=Y_Art5;
   sensorValue1_Old=sensorValue1;
   sensorValue3_Old=sensorValue3;
-  sensorValue5_Old=sensorValue5;
+  sensorValue5_Old=sensorValue5;                                            
+  }
+  counter_refresh++;
+
+
 }
